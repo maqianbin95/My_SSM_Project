@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sc.ustc.dao.QuestionsMapper" >
+  <resultMap id="BaseResultMap" type="sc.ustc.bean.Questions" >
+    <id column="qid" property="qid" jdbcType="INTEGER" />
+    <result column="qtype" property="qtype" jdbcType="VARCHAR" />
+    <result column="qsummary" property="qsummary" jdbcType="VARCHAR" />
+    <result column="qdetail" property="qdetail" jdbcType="VARCHAR" />
+    <result column="qdate" property="qdate" jdbcType="TIMESTAMP" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="hasread" property="hasread" jdbcType="BIT" />
+    <result column="is_advise" property="isAdvise" jdbcType="BIT" />
+    <result column="qcountry" property="qcountry" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <!-- SELECT user.uname,questions.*,answers.adetail -->
+  <resultMap id="questionsAnswersExtend" type="sc.ustc.bean.QuestionsAnswersExtend" >
+    <id column="qid" property="qid" jdbcType="INTEGER" />
+    <result column="qtype" property="qtype" jdbcType="VARCHAR" />
+    <result column="qsummary" property="qsummary" jdbcType="VARCHAR" />
+    <result column="qdetail" property="qdetail" jdbcType="VARCHAR" />
+    <result column="qdate" property="qdate" jdbcType="TIMESTAMP" />
+    <result column="uid" property="uid" jdbcType="INTEGER" />
+    <result column="hasread" property="hasread" jdbcType="BIT" />
+    <result column="is_advise" property="isAdvise" jdbcType="BIT" />
+    <result column="qcountry" property="qcountry"  />
+    
+    <association property="user" javaType="sc.ustc.bean.User">
+    	<id column="uid" property="uid"/>
+    	<result column="uname" property="uname"/>
+    	<result column="upassword" property="upassword"/>
+    	<result column="unickname" property="unickname"/>
+    	<result column="ugender" property="ugender"/>
+    	<result column="uphonenumber" property="uphonenumber"/>
+    	<result column="uemail" property="uemail"/>
+    	<result column="uQQ" property="uqq"/>
+    </association>
+    
+    <association property="answers" javaType="sc.ustc.bean.Answers">
+    	<id column="aid" property="aid"/>
+    	<result column="qid" property="qid"/>
+    	<result column="adetail" property="adetail"/>
+    	<result column="adate" property="adate"/>
+    	<!-- <result column="uid" property="uid"/> -->
+    	<result column="adminid" property="adminid"/>
+    </association>
+    
+  </resultMap>
+  <!-- SELECT user.uname,questions.*,answers.adetail -->
+  <resultMap id="questionsOfUnread" type="sc.ustc.bean.QuestionsAnswersExtend" >
+    <id column="qid" property="qid" jdbcType="INTEGER" />
+    <result column="qtype" property="qtype"/>
+    <result column="qsummary" property="qsummary" />
+    <result column="qdetail" property="qdetail" />
+    <result column="qdate" property="qdate"  />
+    <result column="uid" property="uid" />
+    <result column="hasread" property="hasread"  />
+    <result column="is_advise" property="isAdvise"  />
+    <result column="qcountry" property="qcountry"  />
+    
+    <association property="user" javaType="sc.ustc.bean.User">
+    	<id column="uid" property="uid"/>
+    	<result column="uname" property="uname"/>
+    	<result column="upassword" property="upassword"/>
+    	<result column="unickname" property="unickname"/>
+    	<result column="ugender" property="ugender"/>
+    	<result column="uphonenumber" property="uphonenumber"/>
+    	<result column="uemail" property="uemail"/>
+    	<result column="uQQ" property="uqq"/>
+    </association>
+    
+  </resultMap>
+  
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    qid, qtype, qsummary, qdetail, qdate, uid, hasread, is_advise, qcountry
+  </sql>
+  
+  <!-- 
+  	SELECT user.uname,questions.qdate,questions.qdetail,answers.adetail 
+	FROM questions,answers,USER
+	WHERE 
+	qtype LIKE "%留学生活%" AND qsummary LIKE '%留学生活'  
+	AND answers.`qid`=questions.`qid` AND questions.`uid`=user.`uid`
+	ORDER BY qdate DESC; 
+  -->
+  <select id="selectNewWenDa" parameterType="sc.ustc.bean.Questions" resultMap="questionsAnswersExtend">
+  	SELECT user.*,questions.*,answers.*,DATE_FORMAT(questions.qdate,'%Y-%m-%d %H:%i:%s') as createdate
+	FROM questions,answers,user
+	WHERE 
+	answers.`qid`=questions.`qid` AND questions.`uid`=user.`uid`
+	<if test="qtype!=null">
+		AND qtype LIKE "%${qtype}%"
+	</if>
+	<if test="qsummary!=null">
+		AND qsummary LIKE "%${qsummary}%" 
+	</if> 
+	ORDER BY qdate DESC;
+  </select>
+  
+  <!-- 
+  	SELECT user.uname,questions.qdate,questions.qdetail,answers.adetail 
+	FROM questions,answers,USER
+	WHERE 
+	qtype LIKE "%留学生活%" AND qsummary LIKE '%留学生活'  
+	AND answers.`qid`=questions.`qid` AND questions.`uid`=user.`uid`
+	ORDER BY qdate DESC; 
+  -->
+  <select id="selectAdviceWenDa" parameterType="sc.ustc.bean.Questions" resultMap="questionsAnswersExtend">
+  	SELECT user.*,questions.*,answers.*
+	FROM questions inner join answers inner join user
+	WHERE 
+	answers.`qid`=questions.`qid` AND questions.`uid`=user.`uid`
+	<if test="qtype!=null">
+		AND qtype LIKE "%${qtype}%"
+	</if>
+	<if test="qsummary!=null">
+		AND qsummary LIKE "%${qsummary}%" 
+	</if> 
+	<choose>
+		<when test="isAdvise==true">
+			AND is_advise="1" 
+		</when>
+		<otherwise>
+			AND is_advise="0" 
+		</otherwise>
+	</choose>
+	;
+  </select>
+  
+  <select id="selectMyWenDaByUidRead" parameterType="java.lang.Integer" resultMap="questionsAnswersExtend">
+  	select user.*,questions.*,answers.*
+  	from user inner join questions inner join answers
+  	where 
+  	questions.uid=#{uid} 
+  	and user.uid=questions.uid and answers.qid=questions.qid and questions.hasread='1'
+  	order by qdate desc;
+  </select>
+  <select id="selectMyWenDaByUidUnread" parameterType="java.lang.Integer" resultMap="questionsOfUnread">
+  	select user.*,questions.*,answers.*
+  	from user,questions,answers
+  	where 
+  	questions.uid=#{uid} 
+  	and user.uid=questions.uid and questions.hasread='0'
+  	order by qdate desc;
+  </select>
+  <select id="getUnAnsweredWenDaByUid" parameterType="java.lang.Integer" resultMap="questionsAnswersExtend">
+  	 SELECT user.*,questions.* 
+  	 FROM USER,questions,answers 
+  	 WHERE questions.uid=#{uid} AND user.uid=questions.uid AND questions.`qid` NOT IN( 
+ 		SELECT questions.qid 
+ 		FROM USER,answers,questions
+ 		WHERE questions.uid=#{uid} AND user.uid=questions.uid AND answers.qid=questions.qid);
+  </select>
+  <select id="getAnsweredWenDaByUid" parameterType="java.lang.Integer" resultMap="questionsAnswersExtend">
+  	  SELECT * FROM USER,answers,questions
+ 	  WHERE  questions.uid=#{uid}  AND user.uid=questions.uid AND answers.qid=questions.qid;
+  </select>
+  
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sc.ustc.bean.QuestionsExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from questions
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from questions
+    where qid = #{qid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from questions
+    where qid = #{qid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sc.ustc.bean.QuestionsExample" >
+    delete from questions
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sc.ustc.bean.Questions" >
+    insert into questions (qid, qtype, qsummary, 
+      qdetail, qdate, uid, 
+      hasread, is_advise, qcountry
+      )
+    values (#{qid,jdbcType=INTEGER}, #{qtype,jdbcType=VARCHAR}, #{qsummary,jdbcType=VARCHAR}, 
+      #{qdetail,jdbcType=VARCHAR}, #{qdate,jdbcType=TIMESTAMP}, #{uid,jdbcType=INTEGER}, 
+      #{hasread,jdbcType=BIT}, #{isAdvise,jdbcType=BIT}, #{qcountry,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="sc.ustc.bean.Questions" >
+    insert into questions
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="qid != null" >
+        qid,
+      </if>
+      <if test="qtype != null" >
+        qtype,
+      </if>
+      <if test="qsummary != null" >
+        qsummary,
+      </if>
+      <if test="qdetail != null" >
+        qdetail,
+      </if>
+      <if test="qdate != null" >
+        qdate,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="hasread != null" >
+        hasread,
+      </if>
+      <if test="isAdvise != null" >
+        is_advise,
+      </if>
+      <if test="qcountry != null" >
+        qcountry,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="qid != null" >
+        #{qid,jdbcType=INTEGER},
+      </if>
+      <if test="qtype != null" >
+        #{qtype,jdbcType=VARCHAR},
+      </if>
+      <if test="qsummary != null" >
+        #{qsummary,jdbcType=VARCHAR},
+      </if>
+      <if test="qdetail != null" >
+        #{qdetail,jdbcType=VARCHAR},
+      </if>
+      <if test="qdate != null" >
+        #{qdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="hasread != null" >
+        #{hasread,jdbcType=BIT},
+      </if>
+      <if test="isAdvise != null" >
+        #{isAdvise,jdbcType=BIT},
+      </if>
+      <if test="qcountry != null" >
+        #{qcountry,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sc.ustc.bean.QuestionsExample" resultType="java.lang.Integer" >
+    select count(*) from questions
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update questions
+    <set >
+      <if test="record.qid != null" >
+        qid = #{record.qid,jdbcType=INTEGER},
+      </if>
+      <if test="record.qtype != null" >
+        qtype = #{record.qtype,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qsummary != null" >
+        qsummary = #{record.qsummary,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qdetail != null" >
+        qdetail = #{record.qdetail,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qdate != null" >
+        qdate = #{record.qdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.uid != null" >
+        uid = #{record.uid,jdbcType=INTEGER},
+      </if>
+      <if test="record.hasread != null" >
+        hasread = #{record.hasread,jdbcType=BIT},
+      </if>
+      <if test="record.isAdvise != null" >
+        is_advise = #{record.isAdvise,jdbcType=BIT},
+      </if>
+      <if test="record.qcountry != null" >
+        qcountry = #{record.qcountry,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update questions
+    set qid = #{record.qid,jdbcType=INTEGER},
+      qtype = #{record.qtype,jdbcType=VARCHAR},
+      qsummary = #{record.qsummary,jdbcType=VARCHAR},
+      qdetail = #{record.qdetail,jdbcType=VARCHAR},
+      qdate = #{record.qdate,jdbcType=TIMESTAMP},
+      uid = #{record.uid,jdbcType=INTEGER},
+      hasread = #{record.hasread,jdbcType=BIT},
+      is_advise = #{record.isAdvise,jdbcType=BIT},
+      qcountry = #{record.qcountry,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sc.ustc.bean.Questions" >
+    update questions
+    <set >
+      <if test="qtype != null" >
+        qtype = #{qtype,jdbcType=VARCHAR},
+      </if>
+      <if test="qsummary != null" >
+        qsummary = #{qsummary,jdbcType=VARCHAR},
+      </if>
+      <if test="qdetail != null" >
+        qdetail = #{qdetail,jdbcType=VARCHAR},
+      </if>
+      <if test="qdate != null" >
+        qdate = #{qdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="hasread != null" >
+        hasread = #{hasread,jdbcType=BIT},
+      </if>
+      <if test="isAdvise != null" >
+        is_advise = #{isAdvise,jdbcType=BIT},
+      </if>
+      <if test="qcountry != null" >
+        qcountry = #{qcountry,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where qid = #{qid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sc.ustc.bean.Questions" >
+    update questions
+    set qtype = #{qtype,jdbcType=VARCHAR},
+      qsummary = #{qsummary,jdbcType=VARCHAR},
+      qdetail = #{qdetail,jdbcType=VARCHAR},
+      qdate = #{qdate,jdbcType=TIMESTAMP},
+      uid = #{uid,jdbcType=INTEGER},
+      hasread = #{hasread,jdbcType=BIT},
+      is_advise = #{isAdvise,jdbcType=BIT},
+      qcountry = #{qcountry,jdbcType=VARCHAR}
+    where qid = #{qid,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sc.ustc.dao.SchoolMapper" >
+  <resultMap id="BaseResultMap" type="sc.ustc.bean.School" >
+    <id column="sid" property="sid" jdbcType="INTEGER" />
+    <result column="sname" property="sname" jdbcType="VARCHAR" />
+    <result column="swebsite" property="swebsite" jdbcType="VARCHAR" />
+    <result column="scountry" property="scountry" jdbcType="VARCHAR" />
+    <result column="snature" property="snature" jdbcType="VARCHAR" />
+    <result column="scity" property="scity" jdbcType="VARCHAR" />
+    <result column="sstudentnum" property="sstudentnum" jdbcType="VARCHAR" />
+    <result column="sfoundingyear" property="sfoundingyear" jdbcType="VARCHAR" />
+    <result column="sregion" property="sregion" jdbcType="VARCHAR" />
+    <result column="img" property="img" jdbcType="VARCHAR" />
+    <result column="detail" property="detail" jdbcType="VARCHAR" />
+    <result column="hits" property="hits" jdbcType="BIGINT" />
+    <result column="sspecialprofession" property="sspecialprofession" jdbcType="VARCHAR" />
+    <result column="smaindepartment" property="smaindepartment" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    sid, sname, swebsite, scountry, snature, scity, sstudentnum, sfoundingyear, sregion, 
+    img, detail, hits, sspecialprofession, smaindepartment
+  </sql>
+  
+  <!-- 有选择查询 -->
+  <!-- 查询所有国家 -->
+  <select id="selectAllContries" resultType="java.lang.String">
+  	select distinct scountry from school;
+  </select>
+  
+  <!-- 学校搜索：搜索栏模糊查询 -->
+  <select id="selectSchoolsByConditions" parameterType="sc.ustc.bean.School" resultType="sc.ustc.bean.School">
+  	select * from school 
+  	<!-- where会去掉第一个and -->
+  	<where>
+  		<if test="scountry!=null">
+  			scountry=#{scountry} 
+  		</if>
+	  	<if test="snature!=null">
+	  		and snature=#{snature} 
+	  	</if>
+	  	<if test="sspecialprofession!=null">
+	  		and sspecialprofession=#{sspecialprofession}
+	  	</if>
+	  	<if test="sname">
+	  		and sname like '%${sname}%'
+	  	</if>
+  	</where>
+  </select>
+  
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sc.ustc.bean.SchoolExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from school
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from school
+    where sid = #{sid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from school
+    where sid = #{sid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sc.ustc.bean.SchoolExample" >
+    delete from school
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sc.ustc.bean.School" >
+    insert into school (sid, sname, swebsite, 
+      scountry, snature, scity, 
+      sstudentnum, sfoundingyear, sregion, 
+      img, detail, hits, sspecialprofession, 
+      smaindepartment)
+    values (#{sid,jdbcType=INTEGER}, #{sname,jdbcType=VARCHAR}, #{swebsite,jdbcType=VARCHAR}, 
+      #{scountry,jdbcType=VARCHAR}, #{snature,jdbcType=VARCHAR}, #{scity,jdbcType=VARCHAR}, 
+      #{sstudentnum,jdbcType=VARCHAR}, #{sfoundingyear,jdbcType=VARCHAR}, #{sregion,jdbcType=VARCHAR}, 
+      #{img,jdbcType=VARCHAR}, #{detail,jdbcType=VARCHAR}, #{hits,jdbcType=BIGINT}, #{sspecialprofession,jdbcType=VARCHAR}, 
+      #{smaindepartment,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="sc.ustc.bean.School" >
+    insert into school
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="sid != null" >
+        sid,
+      </if>
+      <if test="sname != null" >
+        sname,
+      </if>
+      <if test="swebsite != null" >
+        swebsite,
+      </if>
+      <if test="scountry != null" >
+        scountry,
+      </if>
+      <if test="snature != null" >
+        snature,
+      </if>
+      <if test="scity != null" >
+        scity,
+      </if>
+      <if test="sstudentnum != null" >
+        sstudentnum,
+      </if>
+      <if test="sfoundingyear != null" >
+        sfoundingyear,
+      </if>
+      <if test="sregion != null" >
+        sregion,
+      </if>
+      <if test="img != null" >
+        img,
+      </if>
+      <if test="detail != null" >
+        detail,
+      </if>
+      <if test="hits != null" >
+        hits,
+      </if>
+      <if test="sspecialprofession != null" >
+        sspecialprofession,
+      </if>
+      <if test="smaindepartment != null" >
+        smaindepartment,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="sid != null" >
+        #{sid,jdbcType=INTEGER},
+      </if>
+      <if test="sname != null" >
+        #{sname,jdbcType=VARCHAR},
+      </if>
+      <if test="swebsite != null" >
+        #{swebsite,jdbcType=VARCHAR},
+      </if>
+      <if test="scountry != null" >
+        #{scountry,jdbcType=VARCHAR},
+      </if>
+      <if test="snature != null" >
+        #{snature,jdbcType=VARCHAR},
+      </if>
+      <if test="scity != null" >
+        #{scity,jdbcType=VARCHAR},
+      </if>
+      <if test="sstudentnum != null" >
+        #{sstudentnum,jdbcType=VARCHAR},
+      </if>
+      <if test="sfoundingyear != null" >
+        #{sfoundingyear,jdbcType=VARCHAR},
+      </if>
+      <if test="sregion != null" >
+        #{sregion,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null" >
+        #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="detail != null" >
+        #{detail,jdbcType=VARCHAR},
+      </if>
+      <if test="hits != null" >
+        #{hits,jdbcType=BIGINT},
+      </if>
+      <if test="sspecialprofession != null" >
+        #{sspecialprofession,jdbcType=VARCHAR},
+      </if>
+      <if test="smaindepartment != null" >
+        #{smaindepartment,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sc.ustc.bean.SchoolExample" resultType="java.lang.Integer" >
+    select count(*) from school
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update school
+    <set >
+      <if test="record.sid != null" >
+        sid = #{record.sid,jdbcType=INTEGER},
+      </if>
+      <if test="record.sname != null" >
+        sname = #{record.sname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.swebsite != null" >
+        swebsite = #{record.swebsite,jdbcType=VARCHAR},
+      </if>
+      <if test="record.scountry != null" >
+        scountry = #{record.scountry,jdbcType=VARCHAR},
+      </if>
+      <if test="record.snature != null" >
+        snature = #{record.snature,jdbcType=VARCHAR},
+      </if>
+      <if test="record.scity != null" >
+        scity = #{record.scity,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sstudentnum != null" >
+        sstudentnum = #{record.sstudentnum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sfoundingyear != null" >
+        sfoundingyear = #{record.sfoundingyear,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sregion != null" >
+        sregion = #{record.sregion,jdbcType=VARCHAR},
+      </if>
+      <if test="record.img != null" >
+        img = #{record.img,jdbcType=VARCHAR},
+      </if>
+      <if test="record.detail != null" >
+        detail = #{record.detail,jdbcType=VARCHAR},
+      </if>
+      <if test="record.hits != null" >
+        hits = #{record.hits,jdbcType=BIGINT},
+      </if>
+      <if test="record.sspecialprofession != null" >
+        sspecialprofession = #{record.sspecialprofession,jdbcType=VARCHAR},
+      </if>
+      <if test="record.smaindepartment != null" >
+        smaindepartment = #{record.smaindepartment,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update school
+    set sid = #{record.sid,jdbcType=INTEGER},
+      sname = #{record.sname,jdbcType=VARCHAR},
+      swebsite = #{record.swebsite,jdbcType=VARCHAR},
+      scountry = #{record.scountry,jdbcType=VARCHAR},
+      snature = #{record.snature,jdbcType=VARCHAR},
+      scity = #{record.scity,jdbcType=VARCHAR},
+      sstudentnum = #{record.sstudentnum,jdbcType=VARCHAR},
+      sfoundingyear = #{record.sfoundingyear,jdbcType=VARCHAR},
+      sregion = #{record.sregion,jdbcType=VARCHAR},
+      img = #{record.img,jdbcType=VARCHAR},
+      detail = #{record.detail,jdbcType=VARCHAR},
+      hits = #{record.hits,jdbcType=BIGINT},
+      sspecialprofession = #{record.sspecialprofession,jdbcType=VARCHAR},
+      smaindepartment = #{record.smaindepartment,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sc.ustc.bean.School" >
+    update school
+    <set >
+      <if test="sname != null" >
+        sname = #{sname,jdbcType=VARCHAR},
+      </if>
+      <if test="swebsite != null" >
+        swebsite = #{swebsite,jdbcType=VARCHAR},
+      </if>
+      <if test="scountry != null" >
+        scountry = #{scountry,jdbcType=VARCHAR},
+      </if>
+      <if test="snature != null" >
+        snature = #{snature,jdbcType=VARCHAR},
+      </if>
+      <if test="scity != null" >
+        scity = #{scity,jdbcType=VARCHAR},
+      </if>
+      <if test="sstudentnum != null" >
+        sstudentnum = #{sstudentnum,jdbcType=VARCHAR},
+      </if>
+      <if test="sfoundingyear != null" >
+        sfoundingyear = #{sfoundingyear,jdbcType=VARCHAR},
+      </if>
+      <if test="sregion != null" >
+        sregion = #{sregion,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null" >
+        img = #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="detail != null" >
+        detail = #{detail,jdbcType=VARCHAR},
+      </if>
+      <if test="hits != null" >
+        hits = #{hits,jdbcType=BIGINT},
+      </if>
+      <if test="sspecialprofession != null" >
+        sspecialprofession = #{sspecialprofession,jdbcType=VARCHAR},
+      </if>
+      <if test="smaindepartment != null" >
+        smaindepartment = #{smaindepartment,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where sid = #{sid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sc.ustc.bean.School" >
+    update school
+    set sname = #{sname,jdbcType=VARCHAR},
+      swebsite = #{swebsite,jdbcType=VARCHAR},
+      scountry = #{scountry,jdbcType=VARCHAR},
+      snature = #{snature,jdbcType=VARCHAR},
+      scity = #{scity,jdbcType=VARCHAR},
+      sstudentnum = #{sstudentnum,jdbcType=VARCHAR},
+      sfoundingyear = #{sfoundingyear,jdbcType=VARCHAR},
+      sregion = #{sregion,jdbcType=VARCHAR},
+      img = #{img,jdbcType=VARCHAR},
+      detail = #{detail,jdbcType=VARCHAR},
+      hits = #{hits,jdbcType=BIGINT},
+      sspecialprofession = #{sspecialprofession,jdbcType=VARCHAR},
+      smaindepartment = #{smaindepartment,jdbcType=VARCHAR}
+    where sid = #{sid,jdbcType=INTEGER}
+  </update>
+</mapper>
